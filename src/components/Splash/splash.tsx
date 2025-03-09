@@ -22,10 +22,25 @@ const Splash = () => {
         animate={animation ? { scale: 1, rotateY: 360 } : {}}
         transition={{ duration: 2, ease: "easeOut" }}
       />
-      <p className="text-base flex justify-end items-center">
-        Loading <span className="bg-white size-1 ml-2 rounded-full"></span>
-        <span className="bg-white size-1 ml-2 rounded-full"></span>
-        <span className="bg-white size-1 ml-2 rounded-full"></span>
+      <p className="text-base flex justify-end items-end leading-3 mt-5">
+        Loading
+        {[0, 1, 2].map((i) => (
+          <motion.span
+            key={i}
+            className="bg-white size-1 ml-1 rounded-full"
+            animate={{
+              y: [0, -3, 0],
+              opacity: [1, 0.3, 1],
+            }}
+            transition={{
+              duration: 0.6,
+              ease: "easeInOut",
+              repeat: Infinity,
+              repeatDelay: 0.2,
+              delay: i * 0.2,
+            }}
+          />
+        ))}
       </p>
     </div>
   );
