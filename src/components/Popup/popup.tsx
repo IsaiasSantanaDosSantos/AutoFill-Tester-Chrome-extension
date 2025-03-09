@@ -1,8 +1,9 @@
-// import React from "react";
-import Splash from "../Splash/splash";
-
 const Popup = () => {
-  return <Splash />;
+  return (
+    <div className="">
+      <h1>Home page</h1>
+    </div>
+  );
 };
 
 export default Popup;
