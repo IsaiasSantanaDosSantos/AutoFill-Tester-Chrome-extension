@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 
 import Splash from "../Splash/splash";
 import Loading from "../../animation/loading";
-import getFieldType from "../../feature/content";
 
 interface FormField {
   name: string;
@@ -38,7 +37,7 @@ const Popup = () => {
         name,
         type,
         label,
-        suggestedType: getFieldType(name, placeholder), 
+        suggestedType: getFieldType(name, placeholder),
         element,
       });
     });
@@ -61,11 +60,22 @@ const Popup = () => {
     return null;
   }
 
-  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "getFields") {
-      sendResponse(getAllFormFields());
-    }
-  });
+  function getFieldType(name: string, placeholder: string): string {
+    const text = (name + " " + placeholder).toLowerCase();
+
+    if (text.includes("cpf")) return "CPF";
+    if (text.includes("cnpj")) return "CNPJ";
+    if (text.includes("email")) return "E-mail";
+    if (text.includes("telefone") || text.includes("celular"))
+      return "Telefone";
+    if (text.includes("cep")) return "CEP";
+    if (text.includes("endereço")) return "Endereço";
+    if (text.includes("rg")) return "RG";
+    if (text.includes("cartão") || text.includes("credito"))
+      return "Cartão de Crédito";
+
+    return "Texto Genérico";
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -76,17 +86,32 @@ const Popup = () => {
       setTimer(false);
     }, 3500);
 
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]?.id) {
-        chrome.tabs.sendMessage(
-          tabs[0].id,
-          { action: "getFields" },
-          (response) => {
-            if (response) setFields(response);
-          }
-        );
-      }
-    });
+    if (typeof chrome !== "undefined" && chrome.runtime?.onMessage) {
+      chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.action === "getFields") {
+          sendResponse(getAllFormFields());
+        }
+        console.log("sender: ", sender);
+      });
+    } else {
+      console.log("chrome.runtime.onMessage não está disponível no popup.");
+    }
+
+    if (typeof chrome !== "undefined" && chrome.tabs?.query) {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]?.id) {
+          chrome.tabs.sendMessage(
+            tabs[0].id,
+            { action: "getFields" },
+            (response) => {
+              if (response) setFields(response);
+            }
+          );
+        }
+      });
+    } else {
+      console.log("chrome.tabs.query não está disponível.");
+    }
 
     return () => {
       clearTimeout(timer);
@@ -123,3 +148,8 @@ const Popup = () => {
 };
 
 export default Popup;
+
+/*
+PRÓXIMO PASSO:
+Testar!
+*/
