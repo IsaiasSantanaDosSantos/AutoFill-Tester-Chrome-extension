@@ -80,7 +80,7 @@ const Popup = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 2500);
+    }, 5452500);
 
     const loadingTime = setTimeout(() => {
       setTimer(false);
@@ -148,8 +148,3 @@ const Popup = () => {
 };
 
 export default Popup;
-
-/*
-PRÓXIMO PASSO:
-Testar!
-*/
