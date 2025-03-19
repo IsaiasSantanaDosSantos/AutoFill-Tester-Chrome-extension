@@ -13,7 +13,9 @@ PRÓXIMO PASSO:
   12. Lógica título eleitoral: Criar lógica para gerar números de titulos ficiticios;
   13. Logica reservista: Criar lógica para gerar números de reservistas ficiticios;
   14. Lógica necessárias: Ver quais tipos falta para gerar campos ficticios
-  4. Após localizar o formulário da página: Exibir cada campo encontrado (garantir que sempre localize todos), e ter a opção de adicionar valores aleatórios (com opção de formatado ou não para campos como CPF, RG, CEP, etc.), ou adicionar um valor especifico em um ou em todos os campos.
+  15. Após localizar o formulário da página: Exibir cada campo encontrado (garantir que sempre localize todos), e ter a opção de adicionar valores aleatórios (com opção de formatado ou não para campos como CPF, RG, CEP, etc.), ou adicionar um valor especifico em um ou em todos os campos.
+  16. Passo seguinte: Ver no final deste arquivo...
+
 
 
  
@@ -26,3 +28,125 @@ RESUMO
 
 Estou desenvolvendo uma extensão para o Chrome com React e Typescript, a ideia da extensão é que ela preenche todos os campos de formulário existentes na página atual, com a opção de adicionar cada informação de forma aleátório, ou o usuário adicionar alguma informação fixa nos campor encontrados, e  quando isso ocorrer, essas informações devem ficar salvas para quando o usuário voltar na página e querem preencher as informações novamente, basta abrir a extensão e clicar em preencher campos. Para se ter uma ideia, quero que, ao abrir a extensão, ela busque o formulario(s) existente na página atual, e exiba todos os campos do formulario encontrado (input, select, textarea, checkbox, etc...), exiba na tela (talvez seja viável abriar um aba com todos os campos ao invez de mostrar tudo na janela da extensão), preciso que ao trazer cada campo, reconheça que tipo de informação se refere cada um, tipo nome, RG, CPF, número de cartão de crédito, CEP, endereço, PIS, Titulo eleitoral, data de nascimento, etc, não importa qual campo seja, preciso que reconheça cada campo, com isso, posso usar algumas bibliotecas disponíveis para gerar os dados ficitícos para cada campo, por isso preciso saber o tipo de informação de cada campo... Eu já desenvolvi a tela de Splash, a tela principal "/popup" (popup.tsx), o arquivo "manifest.json", os arquivos "background.ts" e "content.ts" (incluive esses dois já estão ajustados corretamente), agora preciso dar sequencia na implementação, mas antes, gostaria que me ajudasse com a criação de uma ordem de programação, para que eu posso segui a implementação conforme a ordem correta, sem deixar algo inportante para depois, ou até implementar algo que poderia ser implementado mas no final, se é que me entende!? Uma coisa que pretendo fazer com essa extensão é monentariza-la, mas não com propaganda mas sim com assinaturas, pensei em assinatura mensal, trimestral, semestral e anual, com 7 dias gratis para teste, e como na Web Store não é possivel gerenciar assinaturas (pagamento), pensei em criar algo que eu posso gerenciar de forma automatica esse processo, sempre pensando em formas mais fáceis de implementar algo com PayPal junto com webhook do PayPal/Stripe, a principio, não disponho de capital nenhuma para pagar por algum tipo de serviço, e nem tenho CNPJ, teria que usar meu CPF, se possível. Talvez, se necessário, eu posso usar a conta free do Firebase para salvar alguma informação necessária, e caso a extensão começar a girar uma renda, ai eu abro um CNPJ e altero o plano do Firebase para um plano pago... poderia me ajudar com isso?
   
+
+  ################################################################################
+  📌 Fase 3 - UI e Funcionalidade de Preenchimento
+    •	Criar a interface para visualizar os campos encontrados
+    •	Implementar a funcionalidade de preenchimento automático
+
+
+
+Temos um desafio bem interessante aqui! O fluxo da funcionalidade pode ser dividido em três partes principais:
+
+### 📌 **1. Captura e Exibição dos Campos**
+Opções para exibir os campos capturados:
+- **Exibir na janela da extensão** (popup): Mais acessível, mas pode exigir um scroll longo se houver muitos campos.
+- **Abrir uma nova aba** (`chrome.tabs.create`): Melhor para formulários longos, pois permite mais espaço.
+- **Modal flutuante dentro da página** (injetado via content script): Mantém o usuário na página, mas pode ser intrusivo.
+
+### 📌 **2. Escolha entre Preenchimento Automático ou Manual**
+- Adicionar um **switch toggle (checkbox estilizado)** para o usuário escolher entre preencher automaticamente ou manualmente.
+- Se "Automático" for selecionado, os campos são preenchidos ao carregar a página.
+- O usuário pode editar qualquer campo após o preenchimento automático.
+
+### 📌 **3. Salvamento dos Dados no Navegador**
+Cada página/formulário deve ter uma **chave única baseada no domínio e na estrutura dos campos** para armazenar os valores:
+- **Armazenamento no `chrome.storage.local`** → Dados persistem na extensão.
+- **Formato do objeto salvo:**
+  ```json
+  {
+    "https://exemplo.com/formulario": {
+      "fields": [
+        {"id": "name", "value": "João Silva"},
+        {"id": "email", "value": "joao@email.com"}
+      ],
+      "autoFill": true
+    }
+  }
+  ```
+- Assim, sempre que o usuário visitar o mesmo formulário, a extensão pode recuperar os dados.
+
+---
+
+### 🚀 **Como implementar isso?**
+#### **1️⃣ Capturar e exibir os campos**
+No **content script**, capturamos os campos e enviamos para o popup da extensão:
+```js
+const capturedFields = [...document.querySelectorAll("input, select, textarea")].map(field => ({
+    id: field.id || field.name || "",
+    placeholder: field.placeholder || "",
+    type: field.type || "text",
+    value: field.value || "",
+    category: "desconhecido" // Melhorar com uma lógica
+}));
+
+chrome.runtime.sendMessage({ action: "sendFields", fields: capturedFields });
+```
+
+---
+
+#### **2️⃣ Exibir os campos no popup**
+No **popup.html**, renderizamos os campos capturados e adicionamos um toggle para ativar/desativar o preenchimento automático.
+
+```html
+<label>
+  <input type="checkbox" id="autoFillToggle">
+  Preenchimento Automático
+</label>
+<div id="fieldsContainer"></div>
+<button id="saveFields">Salvar Dados</button>
+```
+
+E no **popup.js**, renderizamos os campos:
+
+```js
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "sendFields") {
+        const container = document.getElementById("fieldsContainer");
+        container.innerHTML = ""; // Limpa antes de exibir
+        
+        message.fields.forEach(field => {
+            const fieldDiv = document.createElement("div");
+            fieldDiv.innerHTML = `
+                <label>${field.placeholder || field.id}</label>
+                <input type="${field.type}" value="${field.value}" data-id="${field.id}">
+            `;
+            container.appendChild(fieldDiv);
+        });
+
+        document.getElementById("saveFields").addEventListener("click", () => {
+            const fieldsData = [...container.querySelectorAll("input")].map(input => ({
+                id: input.dataset.id,
+                value: input.value
+            }));
+            chrome.storage.local.set({ [window.location.hostname]: { fields: fieldsData, autoFill: document.getElementById("autoFillToggle").checked } });
+        });
+    }
+});
+```
+
+---
+
+#### **3️⃣ Preencher automaticamente**
+Criamos um **content script** que verifica se há dados salvos para o domínio atual:
+
+```js
+chrome.storage.local.get(window.location.hostname, (data) => {
+    if (data[window.location.hostname]?.autoFill) {
+        data[window.location.hostname].fields.forEach(field => {
+            let input = document.getElementById(field.id);
+            if (input) input.value = field.value;
+        });
+    }
+});
+```
+
+---
+
+### 🎯 **Conclusão**
+✅ **Exibe os campos no popup da extensão**  
+✅ **Permite salvar e recuperar os valores**  
+✅ **Oferece preenchimento automático opcional**  
+✅ **Usuário pode editar os campos após preenchê-los**  
+
+Agora, só falta decidir como exibir os campos (popup, aba nova ou modal). Como prefere? 🔥

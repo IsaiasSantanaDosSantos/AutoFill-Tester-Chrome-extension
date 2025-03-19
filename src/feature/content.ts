@@ -1,11 +1,11 @@
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-//   if (request.action === "getFields") {
-//     sendResponse({ message: "Campos coletados do content script!" });
-//     console.log("sender: ", sender);
-//   }
-// });
-
 console.log("✅ Content script carregado!");
+
+interface FormFields {
+  nome: string;
+  id: string;
+  placeholder: string;
+  tipo: string;
+}
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log("📩 Mensagem recebida no content script:", request);
@@ -15,7 +15,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const fields = Array.from(
       document.querySelectorAll("input, textarea, select")
     ).map((el) => ({
-      name: el.getAttribute("name") || el.id || "sem_nome",
+      nome: el.getAttribute("name") || el.id || "sem_nome",
       type: el.tagName.toLowerCase(),
       value: (el as HTMLInputElement).value || "",
     }));
@@ -24,27 +24,133 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log("Campos coletados:", fields);
   }
 });
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-//   if (request.action === "getFields") {
-//     sendResponse({ message: "Campos coletados do content script!" });
-//     console.log("sender: ", sender);
-//   }
-// });
-// if (typeof chrome !== "undefined" && chrome.runtime?.onMessage) {
-// } else {
-//   console.log("chrome.runtime.onMessage não está disponível no popup.");
-// }
 
-// const port = chrome.runtime.connect({ name: "content-script" });
-// port.postMessage({ action: "init" });
+function captureAllFormFields(): FormFields[] {
+  const elements = document.querySelectorAll("input, textarea, select");
 
-// port.onMessage.addListener((msg) => {
-//   console.log("Mensagem recebida no content script:", msg);
-// });
+  console.log(`📌 Número de formulários encontrados: ${elements.length}`);
 
-// StackOverflow
+  const fields: FormFields[] = [];
 
-// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-//   console.log(request, sender, sendResponse);
-//   sendResponse("我收到你的消息了：" + JSON.stringify("request"));
-// });
+  elements.forEach((element) => {
+    if (
+      element instanceof HTMLInputElement ||
+      element instanceof HTMLTextAreaElement ||
+      element instanceof HTMLSelectElement
+    ) {
+      const fieldData = {
+        nome: element.getAttribute("name") || "",
+        id: element.getAttribute("id") || "",
+        placeholder: element.getAttribute("placeholder") || "",
+        tipo:
+          element instanceof HTMLInputElement
+            ? element.type
+            : element.tagName.toLowerCase(),
+      };
+
+      // console.log("📌 Campo encontrado:", fieldData);
+      fields.push(fieldData);
+    }
+  });
+
+  return fields;
+}
+
+function classifyField(campo: FormFields) {
+  const nome = campo.nome.toLowerCase();
+  const id = campo.id.toLowerCase();
+  const placeholder = campo.placeholder.toLowerCase();
+  const tipo = campo.tipo;
+
+  const categorias = [
+    { keys: ["cpf"], categoria: "cpf" },
+    { keys: ["rg"], categoria: "rg" },
+    { keys: ["cnpj"], categoria: "cnpj" },
+    { keys: ["email"], categoria: "email" },
+    { keys: ["password", "senha"], categoria: "password" },
+    { keys: ["passwordCheck", "verificar-senha","verificarSenha", "verificar_senha"], categoria: "passwordCheck" },
+    { keys: ["telefone"], categoria: "telefone" },
+    { keys: ["celular"], categoria: "celular" },
+    { keys: ["fantasia", "fantasyName"], categoria: "fantasyName" },
+    { keys: ["inscricao-estadual","inscricao_estadual", "stateRegistration", "inscricaoEstadual"], categoria: "inscricao-estadual" },
+    { keys: ["cep"], categoria: "cep" },
+    { keys: ["cartao", "card"], categoria: "cartao" },
+    { keys: ["validade"], categoria: "validade" },
+    { keys: ["security-code", "security_code", "securityCode", "codigoSeguranca", "codigo-seguranca", "codigo_seguranca"], categoria: "security-code" },
+    { keys: ["nome", "name","customerName"], categoria: "nome" },
+    { keys: ["endereco", "address"], categoria: "endereco" },
+    { keys: ["number", "numero"], categoria: "numero_casa" },
+    { keys: ["neighborhood", "bairro"], categoria: "neighborhood" },
+    { keys: ["complement", "complemento"], categoria: "complement" },
+    { keys: ["captcha", "captchaCode"], categoria: "captcha" },
+    { keys: ["coupon", "cupom"], categoria: "coupon" },
+    { keys: ["corporateReason", "razao-social","razao_social", "razaoSocial"], categoria: "corporateReason" },
+    { keys: ["city", "cidade"], categoria: "cidade" },
+    { keys: ["estado", "state"], categoria: "estado" },
+    { keys: ["countryCode", "codigo-pais", "codigo_pais", "codigoPais"], categoria: "countryCode" },
+    { keys: ["data", "date", "date-nasc", "date_nasc", "dateNasc"], categoria: "data_nascimento" },
+    { keys: ["pis"], categoria: "pis" },
+    { keys: ["titulo"], categoria: "titulo" },
+  ];
+
+  for (const categoria of categorias) {
+    if (
+      categoria.keys.some(
+        (key) =>
+          nome.includes(key) ||
+          id.includes(key) ||
+          placeholder.includes(key) ||
+          tipo.includes(key)
+      )
+    ) {
+      return categoria.categoria;
+    }
+  }
+
+  return "desconhecido";
+}
+
+function captureAndSortFields() {
+  const fields = captureAllFormFields();
+
+  const classifiedFields = fields.map((field) => {
+    return {
+      ...field,
+      category: classifyField(field),
+    };
+  });
+
+  console.log("Campos encontrados: ", classifiedFields);
+  return classifiedFields;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("📌 DOM completamente carregado!");
+  captureAndSortFields();
+});
+
+let observerTimeout: NodeJS.Timeout | null = null;
+let observerDisconnected = false;
+
+const observer = new MutationObserver(() => {
+  if (observerTimeout) clearTimeout(observerTimeout);
+
+  observerTimeout = setTimeout(() => {
+    // console.log("📌 Alterações no DOM detectadas! Atualizando campos...");
+    captureAndSortFields();
+
+    if (!observerDisconnected) {
+      observerDisconnected = true;
+      setTimeout(() => {
+        observer.disconnect();
+        // console.log("🔴 Observer desconectado após 5 segundos.");
+      }, 5000);
+    }
+  }, 500);
+});
+
+observer.observe(document.body, {
+  childList: true,
+  subtree: true,
+  attributes: false,
+});
