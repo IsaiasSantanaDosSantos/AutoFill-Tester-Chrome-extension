@@ -3,5 +3,6 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-  min-width: 400px;
+  min-width: 300px;
+  min-height: 500px;
 }

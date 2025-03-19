@@ -1,0 +1,28 @@
+PRÓXIMO PASSO:
+  1.  Dividir esse componente em outros menores: Passar as funções para outros arquivos;
+  2.  Alterar o ícone: Criar um em 3D;
+  3.  Página de busca: Criar a lógica paa buscar os campos existente no formulário da página atual;
+  4.  Lógica do CPF: Criar uma lógica para gerar CPFs fictícios, mas válidos;
+  5.  Lógica RG: Criar lógica para gerar RGs fictícios mas válidos;
+  6.  Lógica CEP: Criar lógica para gerar CEPs ficticios (se necessário), mas válidos;
+  7.  Lógica CNPJ: Criar lógica para gerar CNPJ ficticios mas válidos;
+  8.  Logica Nº cartão de crédito: Criar lógica para gerar números de cartão de creditos ficticios, mas validos,
+  9.  Lógica número celular: Criar lógica para gerar números de celulares ficitícios, mas válidos;
+  10. Logica número telefone: Criar lógica para gerar números de telefones ficticios, mas válidos;
+  11. Lógica PIS: Criar lógica para gerar números de PIS ficticios, mas válidos;
+  12. Lógica título eleitoral: Criar lógica para gerar números de titulos ficiticios;
+  13. Logica reservista: Criar lógica para gerar números de reservistas ficiticios;
+  14. Lógica necessárias: Ver quais tipos falta para gerar campos ficticios
+  4. Após localizar o formulário da página: Exibir cada campo encontrado (garantir que sempre localize todos), e ter a opção de adicionar valores aleatórios (com opção de formatado ou não para campos como CPF, RG, CEP, etc.), ou adicionar um valor especifico em um ou em todos os campos.
+
+
+ 
+https://chatgpt.com/share/67d82bb1-00c8-8009-a949-4dcbb4f954ef
+
+
+
+
+RESUMO
+
+Estou desenvolvendo uma extensão para o Chrome com React e Typescript, a ideia da extensão é que ela preenche todos os campos de formulário existentes na página atual, com a opção de adicionar cada informação de forma aleátório, ou o usuário adicionar alguma informação fixa nos campor encontrados, e  quando isso ocorrer, essas informações devem ficar salvas para quando o usuário voltar na página e querem preencher as informações novamente, basta abrir a extensão e clicar em preencher campos. Para se ter uma ideia, quero que, ao abrir a extensão, ela busque o formulario(s) existente na página atual, e exiba todos os campos do formulario encontrado (input, select, textarea, checkbox, etc...), exiba na tela (talvez seja viável abriar um aba com todos os campos ao invez de mostrar tudo na janela da extensão), preciso que ao trazer cada campo, reconheça que tipo de informação se refere cada um, tipo nome, RG, CPF, número de cartão de crédito, CEP, endereço, PIS, Titulo eleitoral, data de nascimento, etc, não importa qual campo seja, preciso que reconheça cada campo, com isso, posso usar algumas bibliotecas disponíveis para gerar os dados ficitícos para cada campo, por isso preciso saber o tipo de informação de cada campo... Eu já desenvolvi a tela de Splash, a tela principal "/popup" (popup.tsx), o arquivo "manifest.json", os arquivos "background.ts" e "content.ts" (incluive esses dois já estão ajustados corretamente), agora preciso dar sequencia na implementação, mas antes, gostaria que me ajudasse com a criação de uma ordem de programação, para que eu posso segui a implementação conforme a ordem correta, sem deixar algo inportante para depois, ou até implementar algo que poderia ser implementado mas no final, se é que me entende!? Uma coisa que pretendo fazer com essa extensão é monentariza-la, mas não com propaganda mas sim com assinaturas, pensei em assinatura mensal, trimestral, semestral e anual, com 7 dias gratis para teste, e como na Web Store não é possivel gerenciar assinaturas (pagamento), pensei em criar algo que eu posso gerenciar de forma automatica esse processo, sempre pensando em formas mais fáceis de implementar algo com PayPal junto com webhook do PayPal/Stripe, a principio, não disponho de capital nenhuma para pagar por algum tipo de serviço, e nem tenho CNPJ, teria que usar meu CPF, se possível. Talvez, se necessário, eu posso usar a conta free do Firebase para salvar alguma informação necessária, e caso a extensão começar a girar uma renda, ai eu abro um CNPJ e altero o plano do Firebase para um plano pago... poderia me ajudar com isso?
+  

@@ -3,7 +3,13 @@
   "name": "AutoFill Tester",
   "version": "1.0",
   "description": "Extensão para testar preenchimento automático de formulários",
-  "permissions": ["storage", "activeTab", "scripting", "tabs"],
+  "permissions": [
+    "nativeMessaging",
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
 
   "background": {
     "service_worker": "background.js"
@@ -11,7 +17,7 @@
   "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "index.html",
-    "default_title": "Extension",
+    "default_title": "AutoFill Tester Extension",
     "default_icon": {
       "16": "icon16.png",
       "48": "icon48.png",

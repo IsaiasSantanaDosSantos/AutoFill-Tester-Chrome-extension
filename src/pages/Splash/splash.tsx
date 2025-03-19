@@ -19,7 +19,7 @@ const Splash = () => {
       <motion.img
         src="icon128.png"
         alt="Icon app"
-        className="size-30 m-auto items-end shadow-[var(--shadow-four-sides)]"
+        className="size-30 m-auto items-end"
         initial={{ scale: 0, rotateY: 0 }}
         animate={animation ? { scale: 1, rotateY: 360 } : {}}
         transition={{ duration: 2, ease: "easeOut" }}

@@ -1,6 +1,6 @@
 // src/AppRoutes.tsx
 import { Routes, Route } from "react-router-dom";
-import Popup from "./components/Popup/popup";
+import Popup from "./pages/Popup/popup";
 
 const AppRoutes = () => {
   return (
