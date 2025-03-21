@@ -65,6 +65,7 @@ function classifyField(campo: FormFields) {
   const categorias = [
     { keys: ["cpf"], categoria: "cpf" },
     { keys: ["rg"], categoria: "rg" },
+    { keys: ["nis"], categoria: "nis" },
     { keys: ["cnpj"], categoria: "cnpj" },
     { keys: ["email"], categoria: "email" },
     { keys: ["password", "senha"], categoria: "password" },
@@ -75,6 +76,7 @@ function classifyField(campo: FormFields) {
     { keys: ["inscricao-estadual","inscricao_estadual", "stateRegistration", "inscricaoEstadual"], categoria: "inscricao-estadual" },
     { keys: ["cep"], categoria: "cep" },
     { keys: ["cartao", "card"], categoria: "cartao" },
+    { keys: ["escola", "shool", "instituicao", "institution", "Instituição"], categoria: "shcool" },
     { keys: ["validade"], categoria: "validade" },
     { keys: ["security-code", "security_code", "securityCode", "codigoSeguranca", "codigo-seguranca", "codigo_seguranca"], categoria: "security-code" },
     { keys: ["nome", "name","customerName"], categoria: "nome" },
