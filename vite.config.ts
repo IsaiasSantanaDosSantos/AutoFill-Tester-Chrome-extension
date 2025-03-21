@@ -2,15 +2,25 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
+// import terser from "@rollup/plugin-terser";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    // terser({
+    //   mangle: {
+    //     reserved: ["observerTimeout", "observerDisconnected"],
+    //   },
+    // }),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+
   build: {
     rollupOptions: {
       input: {
@@ -19,7 +29,7 @@ export default defineConfig({
         content: path.resolve(__dirname, "src/feature/content.ts"),
       },
       output: {
-        entryFileNames: chunk => {
+        entryFileNames: (chunk) => {
           return chunk.name === "background" || chunk.name === "content"
             ? "[name].js" // Mantém background.js e content.js na raiz de dist
             : "assets/[name].[hash].js"; // Mantém outros arquivos em assets/

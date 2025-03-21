@@ -5,30 +5,53 @@ interface FormFields {
   id: string;
   placeholder: string;
   tipo: string;
+  category?: string;
+}
+
+function fillInFields(fields: FormFields[]) {
+  fields.forEach((field) => {
+    const element = document.querySelector(
+      `[name="${field.nome}"], [id="${field.id}"]`
+    );
+    if (
+      element instanceof HTMLInputElement ||
+      element instanceof HTMLTextAreaElement ||
+      element instanceof HTMLSelectElement
+    ) {
+      element.value = "Teste Preenchimento";
+      element.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+  });
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log("📩 Mensagem recebida no content script:", request);
+  // console.log("📩 Mensagem recebida no content script:", request);
 
   if (request.action === "getFields") {
     console.log("sender: ", sender);
     const fields = Array.from(
       document.querySelectorAll("input, textarea, select")
     ).map((el) => ({
-      nome: el.getAttribute("name") || el.id || "sem_nome",
-      type: el.tagName.toLowerCase(),
+      nome: el.getAttribute("name") || "sem_nome",
+      id: el.id || "",
+      placeholder: el.getAttribute("placeholder") || "",
+      tipo: el.tagName.toLowerCase(),
       value: (el as HTMLInputElement).value || "",
     }));
 
     sendResponse({ fields });
     console.log("Campos coletados:", fields);
+
+    fillInFields(fields);
+
+    return true;
   }
 });
 
 function captureAllFormFields(): FormFields[] {
   const elements = document.querySelectorAll("input, textarea, select");
 
-  console.log(`📌 Número de formulários encontrados: ${elements.length}`);
+  console.log(`📌 Número de campos encontrados: ${elements.length}`);
 
   const fields: FormFields[] = [];
 
@@ -69,30 +92,71 @@ function classifyField(campo: FormFields) {
     { keys: ["cnpj"], categoria: "cnpj" },
     { keys: ["email"], categoria: "email" },
     { keys: ["password", "senha"], categoria: "password" },
-    { keys: ["passwordCheck", "verificar-senha","verificarSenha", "verificar_senha"], categoria: "passwordCheck" },
+    {
+      keys: [
+        "passwordCheck",
+        "verificar-senha",
+        "verificarSenha",
+        "verificar_senha",
+      ],
+      categoria: "passwordCheck",
+    },
     { keys: ["telefone"], categoria: "telefone" },
     { keys: ["celular"], categoria: "celular" },
     { keys: ["fantasia", "fantasyName"], categoria: "fantasyName" },
-    { keys: ["inscricao-estadual","inscricao_estadual", "stateRegistration", "inscricaoEstadual"], categoria: "inscricao-estadual" },
+    {
+      keys: [
+        "inscricao-estadual",
+        "inscricao_estadual",
+        "stateRegistration",
+        "inscricaoEstadual",
+      ],
+      categoria: "inscricao-estadual",
+    },
     { keys: ["cep"], categoria: "cep" },
-    { keys: ["cartao", "card"], categoria: "cartao" },
-    { keys: ["escola", "shool", "instituicao", "institution", "Instituição"], categoria: "shcool" },
+    { keys: ["creditCar", "cartao", "card"], categoria: "creditCar_radio" },
+    { keys: ["boleto", "ticket"], categoria: "ticket_radio" },
+    { keys: ["pix"], categoria: "pix_radio" },
+    {
+      keys: ["escola", "shool", "instituicao", "institution", "Instituição"],
+      categoria: "shcool",
+    },
     { keys: ["validade"], categoria: "validade" },
-    { keys: ["security-code", "security_code", "securityCode", "codigoSeguranca", "codigo-seguranca", "codigo_seguranca"], categoria: "security-code" },
-    { keys: ["nome", "name","customerName"], categoria: "nome" },
+    {
+      keys: [
+        "security-code",
+        "security_code",
+        "securityCode",
+        "codigoSeguranca",
+        "codigo-seguranca",
+        "codigo_seguranca",
+      ],
+      categoria: "security-code",
+    },
+    { keys: ["nome", "name", "customerName"], categoria: "nome" },
     { keys: ["endereco", "address"], categoria: "endereco" },
-    { keys: ["number", "numero"], categoria: "numero_casa" },
+    { keys: ["number", "numero"], categoria: "numero-residencia" },
     { keys: ["neighborhood", "bairro"], categoria: "neighborhood" },
     { keys: ["complement", "complemento"], categoria: "complement" },
     { keys: ["captcha", "captchaCode"], categoria: "captcha" },
     { keys: ["coupon", "cupom"], categoria: "coupon" },
-    { keys: ["corporateReason", "razao-social","razao_social", "razaoSocial"], categoria: "corporateReason" },
+    {
+      keys: ["corporateReason", "razao-social", "razao_social", "razaoSocial"],
+      categoria: "corporateReason",
+    },
     { keys: ["city", "cidade"], categoria: "cidade" },
     { keys: ["estado", "state"], categoria: "estado" },
-    { keys: ["countryCode", "codigo-pais", "codigo_pais", "codigoPais"], categoria: "countryCode" },
-    { keys: ["data", "date", "date-nasc", "date_nasc", "dateNasc"], categoria: "data_nascimento" },
+    {
+      keys: ["countryCode", "codigo-pais", "codigo_pais", "codigoPais"],
+      categoria: "countryCode",
+    },
+    {
+      keys: ["data", "date", "date-nasc", "date_nasc", "dateNasc"],
+      categoria: "data_nascimento",
+    },
     { keys: ["pis"], categoria: "pis" },
     { keys: ["titulo"], categoria: "titulo" },
+    { keys: ["Digite aqui"], categoria: "textarea" },
   ];
 
   for (const categoria of categorias) {
@@ -112,7 +176,7 @@ function classifyField(campo: FormFields) {
   return "desconhecido";
 }
 
-function captureAndSortFields() {
+function captureAndSortFields(): FormFields[] {
   const fields = captureAllFormFields();
 
   const classifiedFields = fields.map((field) => {
@@ -126,33 +190,17 @@ function captureAndSortFields() {
   return classifiedFields;
 }
 
+function callSequentially() {
+  const times = [5000, 10000];
+  times.forEach((time) => {
+    setTimeout(() => {
+      captureAndSortFields();
+    }, time);
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   console.log("📌 DOM completamente carregado!");
   captureAndSortFields();
-});
-
-let observerTimeout: NodeJS.Timeout | null = null;
-let observerDisconnected = false;
-
-const observer = new MutationObserver(() => {
-  if (observerTimeout) clearTimeout(observerTimeout);
-
-  observerTimeout = setTimeout(() => {
-    // console.log("📌 Alterações no DOM detectadas! Atualizando campos...");
-    captureAndSortFields();
-
-    if (!observerDisconnected) {
-      observerDisconnected = true;
-      setTimeout(() => {
-        observer.disconnect();
-        // console.log("🔴 Observer desconectado após 5 segundos.");
-      }, 5000);
-    }
-  }, 500);
-});
-
-observer.observe(document.body, {
-  childList: true,
-  subtree: true,
-  attributes: false,
+  callSequentially();
 });

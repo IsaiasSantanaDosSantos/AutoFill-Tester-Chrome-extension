@@ -1,20 +1,5 @@
 PRÓXIMO PASSO:
-  1.  Dividir esse componente em outros menores: Passar as funções para outros arquivos;
-  2.  Alterar o ícone: Criar um em 3D;
-  3.  Página de busca: Criar a lógica paa buscar os campos existente no formulário da página atual;
-  4.  Lógica do CPF: Criar uma lógica para gerar CPFs fictícios, mas válidos;
-  5.  Lógica RG: Criar lógica para gerar RGs fictícios mas válidos;
-  6.  Lógica CEP: Criar lógica para gerar CEPs ficticios (se necessário), mas válidos;
-  7.  Lógica CNPJ: Criar lógica para gerar CNPJ ficticios mas válidos;
-  8.  Logica Nº cartão de crédito: Criar lógica para gerar números de cartão de creditos ficticios, mas validos,
-  9.  Lógica número celular: Criar lógica para gerar números de celulares ficitícios, mas válidos;
-  10. Logica número telefone: Criar lógica para gerar números de telefones ficticios, mas válidos;
-  11. Lógica PIS: Criar lógica para gerar números de PIS ficticios, mas válidos;
-  12. Lógica título eleitoral: Criar lógica para gerar números de titulos ficiticios;
-  13. Logica reservista: Criar lógica para gerar números de reservistas ficiticios;
-  14. Lógica necessárias: Ver quais tipos falta para gerar campos ficticios
-  15. Após localizar o formulário da página: Exibir cada campo encontrado (garantir que sempre localize todos), e ter a opção de adicionar valores aleatórios (com opção de formatado ou não para campos como CPF, RG, CEP, etc.), ou adicionar um valor especifico em um ou em todos os campos.
-  16. Passo seguinte: Ver no final deste arquivo...
+  1.  Os campos estão sendo preenchidos com o valor de teste, agora preciso pegar o valor da categoria de cada campo para saber que tipo de campo é para gerar a informação correta para cada campo!
 
 
 
