@@ -1,12 +1,13 @@
+import { FormFields } from "../util/interfaces";
 console.log("✅ Content script carregado!");
 
-interface FormFields {
-  nome: string;
-  id: string;
-  placeholder: string;
-  tipo: string;
-  category?: string;
-}
+// interface FormFields {
+//   nome: string;
+//   id: string;
+//   placeholder: string;
+//   tipo: string;
+//   category?: string;
+// }
 
 function fillInFields(fields: FormFields[]) {
   fields.forEach((field) => {
