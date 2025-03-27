@@ -37,13 +37,32 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       id: el.id || "",
       placeholder: el.getAttribute("placeholder") || "",
       tipo: el.tagName.toLowerCase(),
-      value: (el as HTMLInputElement).value || "",
+      value:
+        (el as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)
+          .value || "",
+      // value: (el as HTMLInputElement).value || "",
     }));
 
-    sendResponse({ fields });
-    console.log("Campos coletados:", fields);
-
     fillInFields(fields);
+
+    setTimeout(() => {
+      const updatedFields = Array.from(
+        document.querySelectorAll("input, textarea, select")
+      ).map((el) => ({
+        nome: el.getAttribute("name") || "sem_nome",
+        id: el.id || "",
+        placeholder: el.getAttribute("placeholder") || "",
+        tipo: el.tagName.toLowerCase(),
+        value:
+          (el as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)
+            .value || "",
+      }));
+      sendResponse({ fields: updatedFields });
+      console.log("Campos coletados (atualizados):", updatedFields);
+    }, 100);
+
+    // sendResponse({ fields });
+    // console.log("Campos coletados:", fields);
 
     return true;
   }

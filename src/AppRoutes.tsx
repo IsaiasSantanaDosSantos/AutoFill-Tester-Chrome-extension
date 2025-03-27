@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Popup from "./pages/Popup/popup";
-import EditForm from "./pages/EditForm/editForm";
+// import EditForm from "./pages/EditForm/editForm";
 
 const AppRoutes = () => {
   return (
@@ -8,7 +8,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Popup />} />
       <Route
         path="/editForm"
-        element={<EditForm fields={{}} onClose={() => {}} />}
+        // element={<EditForm fields={{}} onClose={() => {}} />}
       />
     </Routes>
   );

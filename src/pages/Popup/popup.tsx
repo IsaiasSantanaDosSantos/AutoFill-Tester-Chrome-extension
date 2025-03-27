@@ -60,7 +60,7 @@ const Popup = () => {
                   setDisableBtn(false);
                 }
               );
-            }, 500);
+            }, 100);
           }
         );
       } else {
@@ -81,14 +81,16 @@ const Popup = () => {
   };
 
   const openEditForm = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]?.url) {
-        const editUrl = chrome.runtime.getURL(
-          `/editForm.html?url=${encodeURIComponent(tabs[0].url)}`
-        );
-        chrome.tabs.create({ url: editUrl });
-      }
-    });
+    setTimeout(() => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]?.url) {
+          const editUrl = chrome.runtime.getURL(
+            `/editForm.html?url=${encodeURIComponent(tabs[0].url)}`
+          );
+          chrome.tabs.create({ url: editUrl });
+        }
+      });
+    }, 500);
   };
 
   return (
@@ -127,7 +129,9 @@ const Popup = () => {
                 Preencher Formulário
               </button>
               <button
-                className={`mt-2 border p-1 font-semibold bg-[var(--bg-color)] text-[var(--text-color)] cursor-pointer transform-[250ms] ${disableBtn ? 'btn-disabled' : ''}`}
+                className={`mt-2 border p-1 font-semibold bg-[var(--bg-color)] text-[var(--text-color)] cursor-pointer transform-[250ms] ${
+                  disableBtn ? "btn-disabled" : ""
+                }`}
                 onClick={openEditForm}
                 disabled={disableBtn && true}
               >
