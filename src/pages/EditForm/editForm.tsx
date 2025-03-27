@@ -1,4 +1,7 @@
-import { useState, useEffect } from "react";
+import {
+  // useEffect,
+  useState,
+} from "react";
 
 interface EditFormProps {
   fields: Record<string, string>;
@@ -8,18 +11,26 @@ interface EditFormProps {
 const EditForm = ({ fields, onClose }: EditFormProps) => {
   const [formData, setFormData] = useState(fields);
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const pageUrl = urlParams.get("url");
+  // const urlParams = new URLSearchParams(window.location.search);
+  // const pageUrl = urlParams.get("url");
+  // const savedFields = localStorage.getItem(`editFields_${pageUrl}`);
 
-    if (pageUrl) {
-      // Recupera os dados do localStorage
-      const savedFields = localStorage.getItem(`editFields_${pageUrl}`);
-      if (savedFields) {
-        setFormData(JSON.parse(savedFields));
-      }
-    }
-  }, []);
+  // useEffect(() => {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   const pageUrl = urlParams.get("url");
+
+  //   if (pageUrl) {
+  //     // Recupera os dados do localStorage
+  //     const savedFields = localStorage.getItem(`editFields_${encodeURIComponent(pageUrl)}`);
+  //     if (savedFields) {
+  //       setFormData(JSON.parse(savedFields));
+  //     }
+  //     console.log("savedFields(editForm.tsx file): ", savedFields);
+  //     console.log("fields(editForm.tsx file): ", fields);
+  //     console.log("fields(editForm.tsx file): ", encodeURIComponent(pageUrl));
+
+  //   }
+  // }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -30,7 +41,7 @@ const EditForm = ({ fields, onClose }: EditFormProps) => {
     const pageUrl = urlParams.get("url");
 
     if (pageUrl) {
-      localStorage.setItem(`autofill_${pageUrl}`, JSON.stringify(formData));
+      localStorage.setItem(`editFields_${encodeURIComponent(pageUrl)}`, JSON.stringify(formData));
       alert("Campos salvos com sucesso!");
     }
 
