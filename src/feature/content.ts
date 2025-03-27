@@ -1,14 +1,6 @@
 import { FormFields } from "../util/interfaces";
 console.log("✅ Content script carregado!");
 
-// interface FormFields {
-//   nome: string;
-//   id: string;
-//   placeholder: string;
-//   tipo: string;
-//   category?: string;
-// }
-
 function fillInFields(fields: FormFields[]) {
   fields.forEach((field) => {
     const element = document.querySelector(
@@ -26,10 +18,8 @@ function fillInFields(fields: FormFields[]) {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // console.log("📩 Mensagem recebida no content script:", request);
-
   if (request.action === "getFields") {
-    console.log("sender: ", sender);
+    // console.log("sender: ", sender);
     const fields = Array.from(
       document.querySelectorAll("input, textarea, select")
     ).map((el) => ({
@@ -40,7 +30,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       value:
         (el as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)
           .value || "",
-      // value: (el as HTMLInputElement).value || "",
     }));
 
     fillInFields(fields);
@@ -60,9 +49,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse({ fields: updatedFields });
       console.log("Campos coletados (atualizados):", updatedFields);
     }, 100);
-
-    // sendResponse({ fields });
-    // console.log("Campos coletados:", fields);
 
     return true;
   }

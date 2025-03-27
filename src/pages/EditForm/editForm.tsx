@@ -1,27 +1,31 @@
 import { useState } from "react";
 
-interface Field {
-  nome: string;
-  id: string;
-  placeholder: string;
-  tipo: string;
-  value: string;
-}
+import { EditFormProps } from "../../util/interfaces";
 
-interface EditFormProps {
-  fields:  Field[];
-  onClose: () => void;
-}
+// interface Field {
+//   nome: string;
+//   id: string;
+//   placeholder: string;
+//   tipo: string;
+//   value: string;
+// }
+
+// interface EditFormProps {
+//   fields:  Field[];
+//   onClose: () => void;
+// }
 
 const EditForm = ({ fields, onClose }: EditFormProps) => {
   const [formData, setFormData] = useState(fields);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
     setFormData((prevData) =>
-      prevData.map((field) =>
-        field.id === name ? { ...field, value } : field
-      )
+      prevData.map((field) => (field.id === name ? { ...field, value } : field))
     );
   };
 
