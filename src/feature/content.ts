@@ -1,4 +1,6 @@
 import { FormFields } from "../util/interfaces";
+import { generateFakeData } from "../util/centralFakeData";
+
 console.log("✅ Content script carregado!");
 
 function fillInFields(fields: FormFields[]) {
@@ -11,7 +13,8 @@ function fillInFields(fields: FormFields[]) {
       element instanceof HTMLTextAreaElement ||
       element instanceof HTMLSelectElement
     ) {
-      element.value = "Teste Preenchimento";
+      // console.log("Element: ", classifyField(field));
+      element.value = generateFakeData(classifyField(field)).toString();
       element.dispatchEvent(new Event("input", { bubbles: true }));
     }
   });
@@ -19,7 +22,7 @@ function fillInFields(fields: FormFields[]) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getFields") {
-    // console.log("sender: ", sender);
+    console.log("sender: ", sender);
     const fields = Array.from(
       document.querySelectorAll("input, textarea, select")
     ).map((el) => ({
@@ -94,6 +97,7 @@ function classifyField(campo: FormFields) {
   const categorias = [
     { keys: ["cpf"], categoria: "cpf" },
     { keys: ["rg"], categoria: "rg" },
+    { keys: ["cnh"], categoria: "cnh" },
     { keys: ["nis"], categoria: "nis" },
     { keys: ["cnpj"], categoria: "cnpj" },
     { keys: ["email"], categoria: "email" },

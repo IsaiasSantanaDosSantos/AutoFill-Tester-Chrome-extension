@@ -1,7 +1,7 @@
 PRÓXIMO PASSO:
   ✅ 1. Os campos estão sendo salvo no LocalStorage da extensão, com a chave correspondente a cada URL;
-  2. Nova aba que está abrindo, que deveria exibir os campos, não está exibindo nada, aparentemente, não está carregando o conteúdo do arquivo "editForm.tsx" no arquivo "editForm.html", preciso ver isso → possivel problema: o "<div id="root"></div>" (root), já está sendo usado no "index.html";
-  3.  Os campos estão sendo preenchidos com o valor de teste, agora preciso pegar o valor da categoria de cada campo para saber que tipo de campo é para gerar a informação correta para cada campo!
+  ✅ 2. Nova aba que está abrindo, que deveria exibir os campos, não está exibindo nada, aparentemente, não está carregando o conteúdo do arquivo "editForm.tsx" no arquivo "editForm.html", preciso ver isso → possivel problema: o "<div id="root"></div>" (root), já está sendo usado no "index.html";
+  3.  Os campos estão sendo preenchidos com o valor "[object Promise]", preciso verificar o porquê;
 
 
 

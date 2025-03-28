@@ -13,7 +13,6 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@tailwindcss/vite": "^4.0.14",
     "@types/chrome": "^0.0.309",
-    "cep-promise": "^4.4.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cpf-cnpj-validator": "^1.0.3",
